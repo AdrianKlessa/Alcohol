@@ -28,6 +28,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import alcohol.DBConnection;
 import alcohol.MyLabel;
@@ -325,6 +326,7 @@ public class Main extends Application{
 		labelDesc.setText(desc);
 		labelName.setText(name);
 		labelDesc.setWrapText(true);
+		labelName.setFont(new Font("Arial",30));
 		if(rs.getString("image2")!=null){
 			image=rs.getString("image2");
 			byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(image);
@@ -333,9 +335,9 @@ public class Main extends Application{
 			MyImageView viewableImage = new MyImageView(almostThere,id);
 			viewableImage.setFitHeight(150);
 			viewableImage.setFitWidth(150);
-			GridPane.setConstraints(viewableImage,0,1);
-			GridPane.setConstraints(labelName,1,1);
-			GridPane.setConstraints(labelDesc,0,2,2,1);
+			GridPane.setConstraints(viewableImage,0,2);
+			GridPane.setConstraints(labelName,0,1);
+			GridPane.setConstraints(labelDesc,0,3	,2,1);
 			grid.getChildren().addAll(viewableImage,labelDesc,labelName);
 		}else {
 			GridPane.setConstraints(labelName,0,1);
