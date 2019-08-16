@@ -1,0 +1,19 @@
+.root{
+	
+	-fx-background-color: #383838;
+	
+}
+
+#treeMenu{
+	-fx-focus-color: transparent;
+	-fx-faint-focus-color: transparent;
+	
+}
+
+MyLabel{
+	 -fx-text-fill: white;
+}
+
+Label{
+	 -fx-text-fill: white;
+}
