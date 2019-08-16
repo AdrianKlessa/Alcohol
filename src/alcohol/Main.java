@@ -17,6 +17,8 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -37,32 +39,37 @@ public class Main extends Application{
 	int phase=0;
 	String searchedText;
 	GridPane grid = new GridPane();
+	Button buttonSearch = new Button();
+	Button buttonFavourites = new Button();
+	Button buttonSettings = new Button();
+	Button buttonHistory = new Button();
+	Button buttonAbout = new Button();
+	Button buttonReturn = new Button();
+	HBox searchBox = new HBox(8);
 	public Set<Integer> favouritesSet =new TreeSet<>();
 	private int selectedId=-1;
 	public static void main(String[] args) {
 		launch(args);
 	}
+	ScrollPane scroll = new ScrollPane();
+	int[] checkboxes = new int[300];
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		//Setting up the window
 		window = primaryStage;
 		
-		int[] checkboxes = new int[300];
 		
-
 		
+		scroll.setContent(grid);
+		scroll.setHbarPolicy(ScrollBarPolicy.NEVER);
+		scroll.setFitToWidth(true);
 		
 		//Input
 		TextField searchField = new TextField();
 		searchField.setPromptText("Search a drink by name or choose the ingredients below");
 		searchField.setPrefWidth(350);
-		Button buttonSearch = new Button();
-		Button buttonFavourites = new Button();
-		Button buttonSettings = new Button();
-		Button buttonHistory = new Button();
-		Button buttonAbout = new Button();
-		Button buttonReturn = new Button();
+
 		//Creating favourites set
 		
 		File tmpDir = new File("fav.ini");
@@ -122,7 +129,7 @@ public class Main extends Application{
 		treeMenu= new TreeView<>(root);
 		treeMenu.setId("treeMenu");
 		//Search menu
-		HBox searchBox = new HBox(8);
+		
 		
 		//Icons
 		Image img_favourite = new Image(getClass().getResourceAsStream("/favourite.png"));
@@ -218,19 +225,19 @@ public class Main extends Application{
 					grid.getChildren().remove(bigIMG);
 					try {
 						phase=1;
-						grid.getChildren().removeAll(searchField,buttonSearch,buttonFavourites,buttonSettings,buttonHistory,buttonAbout,treeMenu,bigIMG);
+						grid.getChildren().removeAll(searchField,buttonSearch,buttonFavourites,buttonSettings,buttonHistory,buttonAbout,treeMenu,bigIMG,test);
 						searchBox.getChildren().addAll(buttonReturn, buttonFavourites,buttonHistory, buttonAbout);
 						GridPane.setConstraints(searchBox,0,0,4,1);
 						grid.getChildren().add(searchBox);
 						searchBox.setMinWidth(600);
 						search(searchedText,checkboxes);
 					} catch (Exception e1) {
-						// TODO Auto-generated catch block
+						
 						e1.printStackTrace();
 					}
 					
 					
-					//TODO - search by name
+					
 				}
 				
 			}
@@ -251,7 +258,7 @@ public class Main extends Application{
 					searchBox.setMinWidth(600);
 					search(searchedText,checkboxes);
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
+				
 					e1.printStackTrace();
 				}
 			}
@@ -262,7 +269,7 @@ public class Main extends Application{
 		window.getIcons().add(logo);
 		
 		//Finalizing
-		welcome = new Scene(grid, 800,800);
+		welcome = new Scene(scroll, 800,800);
 		welcome.getStylesheets().add("style.css");
 		window.setScene(welcome);
 		window.setTitle("Alcohol");
@@ -291,7 +298,16 @@ public class Main extends Application{
 		
 	//back button
 	buttBack.setOnAction(e->{
-		System.out.println("TEST");
+		System.out.println("TEST"); //TODO
+		try {
+			grid.getChildren().clear();
+			grid.getChildren().add(searchBox);
+			search(searchedText,checkboxes);
+			phase--;
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	});
 	
 	
