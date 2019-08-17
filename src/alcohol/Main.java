@@ -116,6 +116,8 @@ public class Main extends Application{
 		others = Tools.createBranch("others", root);
 		
 		//Creating references for the ingredients
+		
+		//IMPORTANT! INGREDIENTS HAVE TO BE ADDED IN THE SAME ORDER AS THEIR IDs IN THE DATABASE
 		CheckBoxTreeItem<String> rum, simpleSyrup, limeJuice, pineapple, cocoLopez, gingerBeer, limeWedge, vodka, dryVermouth, bitters, lemon, olives, whiskey, sweetVermouth, rosemary, lemonJuice, peach, ice;
 		//Creating ingredients
 		rum = Tools.createBranch("rum", alcohols);
@@ -338,7 +340,7 @@ public class Main extends Application{
 			viewableImage.setFitHeight(150);
 			viewableImage.setFitWidth(150);
 			GridPane.setConstraints(viewableImage,0,2);
-			GridPane.setConstraints(labelName,0,1);
+			GridPane.setConstraints(labelName,0,1,2,1);
 			GridPane.setConstraints(labelDesc,0,3,2,1);
 			grid.getChildren().addAll(viewableImage,labelDesc,labelName);
 		}else {
