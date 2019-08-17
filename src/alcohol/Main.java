@@ -115,6 +115,7 @@ public class Main extends Application{
 		fruitsAndVegetables = Tools.createBranch("fruits and vegetables", root);
 		others = Tools.createBranch("others", root);
 		
+		
 		//Creating references for the ingredients
 		
 		//IMPORTANT! INGREDIENTS HAVE TO BE ADDED IN THE SAME ORDER AS THEIR IDs IN THE DATABASE
@@ -309,6 +310,11 @@ public class Main extends Application{
 		GridPane.setConstraints(upBox,0,0,2,1);
 		grid.getChildren().add(upBox);
 		
+		if(favouritesSet.contains(selectedId)) {
+			buttFav.setStyle("-fx-background-color: #ff0000; ");
+		}
+		
+		
 		ResultSet rs;
 		DBConnection db = new DBConnection();
 		String myQuery;
@@ -384,7 +390,13 @@ public class Main extends Application{
 		});
 		
 		buttFav.setOnAction(e->{
-			
+			if(favouritesSet.contains(selectedId)) {
+				favouritesSet.remove(selectedId);
+				buttFav.setStyle("-fx-background-color: #F5F5F5; ");
+			}else {
+				favouritesSet.add(selectedId);
+				buttFav.setStyle("-fx-background-color: #ff0000; ");
+			}
 		});
 	}
 	
