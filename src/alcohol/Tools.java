@@ -7,13 +7,14 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class Tools {
-	public static TreeItem<String> createBranch(String title, TreeItem<String> upper){
-		TreeItem<String> item = new TreeItem<>(title);
+	public static CheckBoxTreeItem<String> createBranch(String title, TreeItem<String> upper){
+		CheckBoxTreeItem<String> item = new CheckBoxTreeItem<String>(title);
 		item.setExpanded(false);
 		upper.getChildren().add(item);
 		return item;

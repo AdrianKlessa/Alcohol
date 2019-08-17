@@ -16,12 +16,14 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -47,6 +49,7 @@ public class Main extends Application{
 	Button buttonAbout = new Button();
 	Button buttonReturn = new Button();
 	HBox searchBox = new HBox(8);
+	int checkboxCount=0;
 	public Set<Integer> favouritesSet =new TreeSet<>();
 	private int selectedId=-1;
 	public static void main(String[] args) {
@@ -102,33 +105,44 @@ public class Main extends Application{
 		);
 		
 
-		//Input foldable ingredients menu
-		TreeView<String> treeMenu; //whole tree
-		TreeItem<String> root, juice, liquors, others; //main items and root
-		root = new TreeItem<>("Drink ingredients");
-		root.setExpanded(false);
-		juice = Tools.createBranch("juice",root);
-		liquors = Tools.createBranch("liquors",root);
-		others = Tools.createBranch("others",root);
-		TreeItem<String> orange,lemon,coconutMilk,whiskey,redWine,whiteWine,rum,water; //subitems
-		orange = Tools.createBranch("orange",juice);
-		lemon = Tools.createBranch("lemon",juice);
-		coconutMilk = Tools.createBranch("coconut milk",juice);
+		
+		//Ingredients menu with checkboxes
+		TreeView<String> treeMenu;
+		CheckBoxTreeItem<String> root, alcohols, juice, fruitsAndVegetables, others; //categories and root
+		root= new CheckBoxTreeItem<String>("Drinkj ingredients");
+		alcohols = Tools.createBranch("alcohols", root);
+		juice = Tools.createBranch("juice", root);
+		fruitsAndVegetables = Tools.createBranch("fruits and vegetables", root);
+		others = Tools.createBranch("others", root);
+		
+		//Creating references for the ingredients
+		CheckBoxTreeItem<String> rum, simpleSyrup, limeJuice, pineapple, cocoLopez, gingerBeer, limeWedge, vodka, dryVermouth, bitters, lemon, olives, whiskey, sweetVermouth, rosemary, lemonJuice, peach, ice;
+		//Creating ingredients
+		rum = Tools.createBranch("rum", alcohols);
+		simpleSyrup = Tools.createBranch("simple syrup", others);
+		limeJuice = Tools.createBranch("lime juice",juice);
+		pineapple = Tools.createBranch("pineapple",fruitsAndVegetables);
+		cocoLopez = Tools.createBranch("Coco Lopez",juice);
+		gingerBeer = Tools.createBranch("ginger beer",alcohols);
+		limeWedge = Tools.createBranch("lime wedge",fruitsAndVegetables);
+		vodka = Tools.createBranch("vodka",alcohols);
+		dryVermouth = Tools.createBranch("dry Vermouth",alcohols);
+		bitters = Tools.createBranch("bitters",others);
+		lemon = Tools.createBranch("lemon",fruitsAndVegetables);
+		olives = Tools.createBranch("olives",fruitsAndVegetables);
+		whiskey = Tools.createBranch("whiskey",alcohols);
+		sweetVermouth = Tools.createBranch("sweet Vermouth",alcohols);
+		rosemary = Tools.createBranch("rosemary",others);
+		lemonJuice = Tools.createBranch("lemonJuice",juice);
+		peach = Tools.createBranch("peach",fruitsAndVegetables);
+		ice = Tools.createBranch("ice",others);
+		//Creating id values for the ingredients
 		
 		
-		whiskey = Tools.createBranch("whiskey",liquors);
-		redWine = Tools.createBranch("red wine",liquors);
-		whiteWine = Tools.createBranch("white wine",liquors);
 		
-		
-		water = Tools.createBranch("water", others);
-		
-
-		
-		
-		
-		treeMenu= new TreeView<>(root);
+		treeMenu = new TreeView<>(root);
 		treeMenu.setId("treeMenu");
+		treeMenu.setCellFactory(CheckBoxTreeCell.<String>forTreeView());
 		//Search menu
 		
 		
@@ -221,8 +235,9 @@ public class Main extends Application{
 			
 			if(e.getCode()==KeyCode.ENTER) {
 				searchedText=searchField.getText();
-				if(!searchedText.isEmpty()) {
+				
 					System.out.println("Searched: "+searchedText);
+					getCheckboxValues(rum, simpleSyrup, limeJuice, pineapple, cocoLopez, gingerBeer, limeWedge, vodka, dryVermouth, bitters, lemon, olives, whiskey, sweetVermouth, rosemary, lemonJuice, peach, ice);
 					grid.getChildren().remove(bigIMG);
 					try {
 						phase=1;
@@ -239,16 +254,17 @@ public class Main extends Application{
 					
 					
 					
-				}
+				
 				
 			}
 			
 		});
 		
 		buttonSearch.setOnAction(e->{
-			String searchedText=searchField.getText().trim();
-			if(!searchedText.isEmpty()) {
+			searchedText=searchField.getText().trim();
+			
 				System.out.println("Searched: "+searchedText);
+				getCheckboxValues(rum, simpleSyrup, limeJuice, pineapple, cocoLopez, gingerBeer, limeWedge, vodka, dryVermouth, bitters, lemon, olives, whiskey, sweetVermouth, rosemary, lemonJuice, peach, ice);
 				grid.getChildren().remove(bigIMG);
 				try {
 					phase=1;
@@ -262,7 +278,7 @@ public class Main extends Application{
 				
 					e1.printStackTrace();
 				}
-			}
+			
 			
 		});
 		
@@ -297,27 +313,13 @@ public class Main extends Application{
 		myQuery = "SELECT* FROM DRINK WHERE ID="+selectedId;
 	rs=db.selectQuery(myQuery);
 		
-	//back button
-	buttBack.setOnAction(e->{
-		System.out.println("TEST"); //TODO
-		try {
-			grid.getChildren().clear();
-			grid.getChildren().add(searchBox);
-			search(searchedText,checkboxes);
-			phase--;
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-	});
 	
+
 	
-	
-	
-	//search
+	//search for data from the drink table
 		String name,desc;
-		String image;
-		String ingredients;
+		String image=null;
+		
 		
 		name=rs.getString("name");
 		desc=rs.getString("desc");
@@ -337,22 +339,112 @@ public class Main extends Application{
 			viewableImage.setFitWidth(150);
 			GridPane.setConstraints(viewableImage,0,2);
 			GridPane.setConstraints(labelName,0,1);
-			GridPane.setConstraints(labelDesc,0,3	,2,1);
+			GridPane.setConstraints(labelDesc,0,3,2,1);
 			grid.getChildren().addAll(viewableImage,labelDesc,labelName);
 		}else {
 			GridPane.setConstraints(labelName,0,1);
-			GridPane.setConstraints(labelDesc,0,2,2,1);
+			GridPane.setConstraints(labelDesc,0,3,2,1);
 			grid.getChildren().addAll(labelDesc,labelName);
 		}
+		
+		//search for data from the ingredients table
+			String ingredients="";
+			Label labelIngredients = new Label();
+			String ingAmount;
+			String ingName;
+			myQuery = "SELECT name, Amount  FROM Ingredient, DrinkIngredient WHERE DrinkIngredient.IDDrink="+Integer.toString(selectedId)+" AND DrinkIngredient.IDIngredient=Ingredient.ID";
+			rs=db.selectQuery(myQuery);
+			while(rs.next()) {
+				ingAmount=rs.getString("Amount");
+				ingName=rs.getString("name");
+				ingredients+="• "+ingName+" x "+ingAmount+"\n";
+			}
+			labelIngredients.setText(ingredients);
+			labelIngredients.setFont(new Font("Arial",15));
+			if(image==null) {
+				GridPane.setConstraints(labelIngredients,0,2,2,1);
+			}else {
+			GridPane.setConstraints(labelIngredients,1,2,2,1);
+			}
+			grid.getChildren().add(labelIngredients);
+		//back button
+		buttBack.setOnAction(e->{
+			System.out.println("TEST"); //TODO
+			try {
+				grid.getChildren().clear();
+				grid.getChildren().add(searchBox);
+				search(searchedText,checkboxes);
+				phase--;
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		});
+		
+		buttFav.setOnAction(e->{
+			
+		});
 	}
 	
 
+	private void getCheckboxValues(CheckBoxTreeItem<String>... checks) {
+		int counter = 1;
+		for (CheckBoxTreeItem<String> v:checks) {
+			if (v.isSelected()==true) {
+				checkboxes[counter]=1;
+			}else {
+				checkboxes[counter]=0;
+			}
+			counter++;
+			checkboxCount++;
+		}
+		
+	}
+	
 	
 	
 	private void search(String string, int [] checkboxes) throws Exception {
 		ResultSet rs;
 		DBConnection db = new DBConnection();
-		rs=db.selectQuery("SELECT * FROM DRINK");
+		
+		String query1="SELECT * FROM DRINK";
+		
+		String lacking="";
+		int ingCounter=0;
+		int first=0;
+		while(ingCounter<=checkboxCount) {
+			if(checkboxes[ingCounter+1]==0) {
+				if(first==0) {
+					first=1;
+					lacking=Integer.toString(ingCounter+1);
+				}else{
+					lacking+=","+Integer.toString(ingCounter+1);
+				}
+			}
+			
+			
+			ingCounter++;
+		}
+		
+		if(first==0) {
+			if(searchedText.isEmpty()) {
+				query1="SELECT * FROM DRINK;";
+			}else {
+				query1="SELECT * FROM DRINK WHERE name LIKE '%"+searchedText+"%';";
+			}
+			
+		}else {
+			if(searchedText.isEmpty()) {
+				query1="SELECT * FROM DRINK WHERE ID NOT IN(SELECT DISTINCT IDDrink FROM DrinkIngredient WHERE IDIngredient IN ("+lacking+"));";
+			}else {
+				query1="SELECT * FROM DRINK WHERE ID NOT IN(SELECT DISTINCT IDDrink FROM DrinkIngredient WHERE IDIngredient IN ("+lacking+")) AND name LIKE '%"+searchedText+"%';";
+			}
+		}
+		
+
+		
+		
+		rs=db.selectQuery(query1);
 		int id;
 		String name, desc;
 		String image;
