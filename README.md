@@ -1,5 +1,5 @@
 # Alcohol
-My first programming project - a Java application for finding alcoholic drinks that use only the specified (available) ingredients.
+Java application for finding alcoholic drinks that use only the specified (available) ingredients.
 
 It's literally the first serious application I'm making so beware of many bugs and general spaghetti code.
 
