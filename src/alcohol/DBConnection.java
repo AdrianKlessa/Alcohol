@@ -16,7 +16,6 @@ public class DBConnection {
 		try {
 			Class.forName("org.sqlite.JDBC");
 			c = DriverManager.getConnection("jdbc:sqlite:base.db");
-			System.out.println("Connection to db OK!");
 			
 			
 		}catch(Exception e) {
