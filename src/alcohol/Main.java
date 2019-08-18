@@ -37,8 +37,8 @@ import alcohol.MyLabel;
 
 public class Main extends Application{
 
-	Stage window, options, favourites;
-	Scene welcome,selection;
+	Stage window;
+	Scene welcome;
 	int phase=0;
 	String searchedText;
 	GridPane grid = new GridPane();
@@ -279,6 +279,7 @@ public class Main extends Application{
 		});
 		
 		buttonFavourites.setOnAction(e->{
+			searchedText=searchField.getText();
 			grid.getChildren().remove(bigIMG);
 			grid.getChildren().removeAll(searchField,buttonSearch,buttonFavourites,buttonSettings,buttonHistory,buttonAbout,treeMenu,bigIMG,test);
 			searchBox.getChildren().addAll(buttonReturn, buttonFavourites,buttonHistory, buttonAbout);
