@@ -49,6 +49,7 @@ public class Main extends Application{
 	Button buttonAbout = new Button();
 	Button buttonReturn = new Button();
 	HBox searchBox = new HBox(8);
+	int viewingFavs = 0;
 	int checkboxCount=0;
 	public Set<Integer> favouritesSet =new TreeSet<>();
 	private int selectedId=-1;
@@ -205,6 +206,7 @@ public class Main extends Application{
 				grid.getChildren().add(treeMenu);
 				grid.add(test,2,1,4,1);
 				searchBox.getChildren().clear();
+				viewingFavs=0;
 				phase=0;
 			}else{
 				System.out.println("TESTING");
@@ -274,6 +276,22 @@ public class Main extends Application{
 				}
 			
 			
+		});
+		
+		buttonFavourites.setOnAction(e->{
+			grid.getChildren().remove(bigIMG);
+			grid.getChildren().removeAll(searchField,buttonSearch,buttonFavourites,buttonSettings,buttonHistory,buttonAbout,treeMenu,bigIMG,test);
+			searchBox.getChildren().addAll(buttonReturn, buttonFavourites,buttonHistory, buttonAbout);
+			GridPane.setConstraints(searchBox,0,0,4,1);
+			phase=1;
+			grid.getChildren().add(searchBox);
+			searchBox.setMinWidth(600);
+			viewingFavs=1;
+			try {
+				search(searchedText,checkboxes);
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
 		});
 		
 		Image logo = new Image(getClass().getResourceAsStream("/coctail.png"));
@@ -416,6 +434,7 @@ public class Main extends Application{
 		String lacking="";
 		int ingCounter=0;
 		int first=0;
+		
 		while(ingCounter<=checkboxCount) {
 			if(checkboxes[ingCounter+1]==0) {
 				if(first==0) {
@@ -444,8 +463,25 @@ public class Main extends Application{
 				query1="SELECT * FROM DRINK WHERE ID NOT IN(SELECT DISTINCT IDDrink FROM DrinkIngredient WHERE IDIngredient IN ("+lacking+")) AND name LIKE '%"+searchedText+"%';";
 			}
 		}
+		String favsString="";
+		ingCounter=0;
+		first=0;
 		
-
+		if(viewingFavs==1) {
+			for(Integer current: favouritesSet) {
+				if(first==0) {
+					favsString=Integer.toString(current);
+					first=1;
+				}else {
+					favsString+=", "+Integer.toString(current);
+				}
+				
+				
+			}
+			query1="SELECT * FROM DRINK WHERE ID IN ("+favsString+");";
+		}
+		
+		
 		
 		
 		rs=db.selectQuery(query1);
