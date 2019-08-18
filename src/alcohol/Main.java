@@ -90,11 +90,6 @@ public class Main extends Application{
 			g.closeFile();
 			favouritesSet =new TreeSet<>();
 		}
-		//printing out the current set
-		for(Integer id:favouritesSet) {
-			System.out.println(id);
-		};
-		
 		
 		
 		//Saving the new favourites file on application close
@@ -222,7 +217,6 @@ public class Main extends Application{
 				try {
 					search(searchedText,checkboxes);
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				
@@ -238,8 +232,6 @@ public class Main extends Application{
 			
 			if(e.getCode()==KeyCode.ENTER) {
 				searchedText=searchField.getText();
-				
-					System.out.println("Searched: "+searchedText);
 					getCheckboxValues(rum, simpleSyrup, limeJuice, pineapple, cocoLopez, gingerBeer, limeWedge, vodka, dryVermouth, bitters, lemon, olives, whiskey, sweetVermouth, rosemary, lemonJuice, peach, ice);
 					grid.getChildren().remove(bigIMG);
 					try {
@@ -266,7 +258,6 @@ public class Main extends Application{
 		buttonSearch.setOnAction(e->{
 			searchedText=searchField.getText().trim();
 			
-				System.out.println("Searched: "+searchedText);
 				getCheckboxValues(rum, simpleSyrup, limeJuice, pineapple, cocoLopez, gingerBeer, limeWedge, vodka, dryVermouth, bitters, lemon, olives, whiskey, sweetVermouth, rosemary, lemonJuice, peach, ice);
 				grid.getChildren().remove(bigIMG);
 				try {
@@ -377,14 +368,12 @@ public class Main extends Application{
 			grid.getChildren().add(labelIngredients);
 		//back button
 		buttBack.setOnAction(e->{
-			System.out.println("TEST"); //TODO
 			try {
 				grid.getChildren().clear();
 				grid.getChildren().add(searchBox);
 				search(searchedText,checkboxes);
 				phase--;
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		});
@@ -398,6 +387,7 @@ public class Main extends Application{
 				buttFav.setStyle("-fx-background-color: #ff0000; ");
 			}
 		});
+		db.closeDB();
 	}
 	
 
@@ -484,11 +474,9 @@ public class Main extends Application{
 				{
 					Object source = e.getSource();
 					selectedId=((MyImageView)source).get_drink_id();
-					System.out.println("Selected: "+selectedId);
 					try {
 						showDrink(selectedId);
 					} catch (Exception e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 				});
@@ -505,11 +493,9 @@ public class Main extends Application{
 				
 				Object source = e.getSource();
 				selectedId=((MyLabel)source).get_drink_id();
-				System.out.println("Selected: "+selectedId);
 				try {
 					showDrink(selectedId);
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}
@@ -519,11 +505,9 @@ public class Main extends Application{
 			{
 				Object source = e.getSource();
 				selectedId=((MyLabel)source).get_drink_id();
-				System.out.println("Selected: "+selectedId);
 				try {
 					showDrink(selectedId);
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}
@@ -533,11 +517,9 @@ public class Main extends Application{
 			{
 				Object source = e.getSource();
 				selectedId=((MyLabel)source).get_drink_id();
-				System.out.println("Selected: "+selectedId);
 				try {
 					showDrink(selectedId);
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}
@@ -557,9 +539,6 @@ public class Main extends Application{
 		}
 		
 		db.closeDB();	
-		
-		
-		System.out.println("Searched sth");
 	}
 
 } 
