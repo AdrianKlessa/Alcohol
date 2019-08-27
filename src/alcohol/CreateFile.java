@@ -1,6 +1,7 @@
 package alcohol;
 
 import java.util.Formatter;
+import java.util.List;
 import java.util.Set;
 
 public class CreateFile {
@@ -32,6 +33,17 @@ public class CreateFile {
 			g.addRecord(Integer.toString(id));
 		};
 		
+		
+		g.closeFile();
+	}
+	
+	public static void saveHistory(List<Integer> history) {
+		CreateFile g = new CreateFile();
+		g.openFile("history.ini");
+		
+		for(Integer id:history) {
+			g.addRecord(Integer.toString(id));
+		};
 		
 		g.closeFile();
 	}

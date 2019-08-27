@@ -5,6 +5,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -48,16 +50,19 @@ public class Main extends Application{
 	Button buttonHistory = new Button();
 	Button buttonAbout = new Button();
 	Button buttonReturn = new Button();
+	Button buttonDeleteHistory = new Button();
 	HBox searchBox = new HBox(8);
 	int viewingFavs = 0;
 	int checkboxCount=0;
 	public Set<Integer> favouritesSet =new TreeSet<>();
+	List<Integer> historyList = new ArrayList<Integer>(30);
 	private int selectedId=-1;
 	public static void main(String[] args) {
 		launch(args);
 	}
 	ScrollPane scroll = new ScrollPane();
 	int[] checkboxes = new int[300];
+	int viewingHistory=0;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -92,11 +97,30 @@ public class Main extends Application{
 			favouritesSet =new TreeSet<>();
 		}
 		
+		//Creating history list
 		
-		//Saving the new favourites file on application close
+		File historyFile = new File("history.ini");
+		if(historyFile.exists()) {
+			ReadFile s = new ReadFile();
+			s.openFile("history.ini");
+			historyList = s.readHistory();
+			s.closeFile();
+		}else {
+			CreateFile g = new CreateFile();
+			g.openFile("history.ini");
+			g.closeFile();
+		}
+		
+		
+		
+		
+		
+		
+		//Saving the new favourites and history files on application close
 		
 		window.setOnCloseRequest(e->{
 			CreateFile.saveFav(favouritesSet);
+			CreateFile.saveHistory(historyList);
 		}
 		);
 		
@@ -153,6 +177,7 @@ public class Main extends Application{
 		Image img_settings = new Image(getClass().getResourceAsStream("/settings.png"));
 		Image img_welcome = new Image(getClass().getResourceAsStream("/coctailBig.png"));
 		Image img_return = new Image(getClass().getResourceAsStream("/return.png"));
+		Image img_garbage = new Image(getClass().getResourceAsStream("/garbage.png"));
 		ImageView bigIMG = new ImageView(img_welcome);
 		
 		buttonSearch.setGraphic(new ImageView(img_search));
@@ -161,7 +186,7 @@ public class Main extends Application{
 		buttonHistory.setGraphic(new ImageView(img_history2));
 		buttonAbout.setGraphic(new ImageView(img_info));
 		buttonReturn.setGraphic(new ImageView(img_return));
-		
+		buttonDeleteHistory.setGraphic(new ImageView(img_garbage));
 
 
 		
@@ -208,6 +233,7 @@ public class Main extends Application{
 				searchBox.getChildren().clear();
 				viewingFavs=0;
 				phase=0;
+				viewingHistory=0;
 			}else{
 				System.out.println("TESTING");
 				grid.getChildren().clear();	
@@ -265,7 +291,7 @@ public class Main extends Application{
 				try {
 					phase=1;
 					grid.getChildren().removeAll(searchField,buttonSearch,buttonFavourites,buttonSettings,buttonHistory,buttonAbout,treeMenu,bigIMG,test);
-					searchBox.getChildren().addAll(buttonReturn, buttonFavourites,buttonHistory, buttonAbout);
+					searchBox.getChildren().addAll(buttonReturn, buttonAbout);
 					GridPane.setConstraints(searchBox,0,0,4,1);
 					grid.getChildren().add(searchBox);
 					searchBox.setMinWidth(600);
@@ -278,11 +304,33 @@ public class Main extends Application{
 			
 		});
 		
+		
+		buttonHistory.setOnAction(e->{
+			viewingHistory=1;
+			searchedText=searchField.getText().trim();
+			
+			getCheckboxValues(rum, simpleSyrup, limeJuice, pineapple, cocoLopez, gingerBeer, limeWedge, vodka, dryVermouth, bitters, lemon, olives, whiskey, sweetVermouth, rosemary, lemonJuice, peach, ice);
+			grid.getChildren().remove(bigIMG);
+			try {
+				phase=1;
+				grid.getChildren().removeAll(searchField,buttonSearch,buttonFavourites,buttonSettings,buttonHistory,buttonAbout,treeMenu,bigIMG,test);
+				searchBox.getChildren().addAll(buttonReturn, buttonAbout);
+				GridPane.setConstraints(searchBox,0,0,4,1);
+				grid.getChildren().add(searchBox);
+				searchBox.setMinWidth(600);
+				search(searchedText,checkboxes);
+			} catch (Exception e1) {
+			
+				e1.printStackTrace();
+			}
+			
+		});
+		
 		buttonFavourites.setOnAction(e->{
 			searchedText=searchField.getText();
 			grid.getChildren().remove(bigIMG);
 			grid.getChildren().removeAll(searchField,buttonSearch,buttonFavourites,buttonSettings,buttonHistory,buttonAbout,treeMenu,bigIMG,test);
-			searchBox.getChildren().addAll(buttonReturn, buttonFavourites,buttonHistory, buttonAbout);
+			searchBox.getChildren().addAll(buttonReturn,buttonAbout);
 			GridPane.setConstraints(searchBox,0,0,4,1);
 			phase=1;
 			grid.getChildren().add(searchBox);
@@ -424,8 +472,6 @@ public class Main extends Application{
 		
 	}
 	
-	
-	
 	private void search(String string, int [] checkboxes) throws Exception {
 		ResultSet rs;
 		DBConnection db = new DBConnection();
@@ -481,8 +527,37 @@ public class Main extends Application{
 			}
 			query1="SELECT * FROM DRINK WHERE ID IN ("+favsString+");";
 		}
+		if(viewingHistory==1) {
+			String histString="";
+			
+			
+			for (int i = historyList.size(); i-- > 0; ) {
+			    System.out.println(historyList.get(i));
+				if(first==0) {
+					histString=Integer.toString(historyList.get(i));
+					first=1;
+				}else {
+					histString+=", "+Integer.toString(historyList.get(i));
+				}
+			    
+			}
+			
+			
+			
+			for(Integer current: historyList) {
+				if(first==0) {
+					histString=Integer.toString(current);
+					first=1;
+				}else {
+					histString+=", "+Integer.toString(current);
+				}
+				
+				
+			}
+			query1="SELECT * FROM DRINK WHERE ID IN ("+histString+");";
+		}
 		
-		
+
 		
 		
 		rs=db.selectQuery(query1);
@@ -513,6 +588,7 @@ public class Main extends Application{
 					selectedId=((MyImageView)source).get_drink_id();
 					try {
 						showDrink(selectedId);
+						historyList.add(selectedId);
 					} catch (Exception e1) {
 						e1.printStackTrace();
 					}
@@ -532,6 +608,7 @@ public class Main extends Application{
 				selectedId=((MyLabel)source).get_drink_id();
 				try {
 					showDrink(selectedId);
+					historyList.add(selectedId);
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
@@ -544,6 +621,7 @@ public class Main extends Application{
 				selectedId=((MyLabel)source).get_drink_id();
 				try {
 					showDrink(selectedId);
+					historyList.add(selectedId);
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
@@ -556,6 +634,7 @@ public class Main extends Application{
 				selectedId=((MyLabel)source).get_drink_id();
 				try {
 					showDrink(selectedId);
+					historyList.add(selectedId);
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
