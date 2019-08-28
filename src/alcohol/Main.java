@@ -647,6 +647,12 @@ public class Main extends Application{
 				counter++;
 				grid.getChildren().addAll(label1,label2,label3);
 			}
+			if(counter==1) {
+				label1 = new Label("Nothing found :(");
+				label1.setFont(new Font("Arial", 24));
+				GridPane.setConstraints(label1,0,1,4,1);
+				grid.getChildren().add(label1);
+			}
 		}else {
 			
 			//Normal search (non-history)
@@ -742,6 +748,12 @@ public class Main extends Application{
 				GridPane.setConstraints(label3,2,counter);
 				counter++;
 				grid.getChildren().addAll(label1,label2,label3);
+			}
+			if(counter==1) {
+				label1 = new Label("Nothing found :(");
+				label1.setFont(new Font("Arial", 24));
+				GridPane.setConstraints(label1,0,1,4,1);
+				grid.getChildren().add(label1);
 			}
 		}
 		db.closeDB();	
