@@ -214,7 +214,7 @@ public class Main extends Application{
 		GridPane.setConstraints(buttonAbout,5,0);
 		GridPane.setConstraints(treeMenu,0,1,1,3);
 		GridPane.setConstraints(bigIMG,1,1);
-		Label test = new Label("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris imperdiet diam vel fringilla facilisis. Aenean sit amet turpis consectetur, lobortis velit vel, scelerisque tortor. Ut est quam, dictum sed venenatis sit amet, auctor eget dui. Sed id nisi a est congue faucibus. Maecenas ac mi rutrum sem dictum commodo. Duis fringilla placerat egestas. Fusce in eros eget libero elementum pharetra malesuada sit amet nulla. Nullam congue, ante eget maximus sagittis, ex augue consequat justo, at blandit elit augue at neque. Pellentesque ac felis ante. Donec eu pretium nisl. ");
+		Label test = new Label("Welcome to Alcohol! \n\nYou can search for a drink by its name or by selecting which ingredients you have available. \n\nKeep in mind that if the search box is empty, it will search only by the ingredients, but if there's any content inside it will search for drinks that have BOTH the name and ingredients provided.");
 		
 		test.setWrapText(true);
 		grid.getChildren().addAll(searchField,buttonSearch,buttonFavourites,buttonSettings,buttonHistory,buttonAbout,bigIMG);
