@@ -192,7 +192,7 @@ public class Main extends Application{
 		
 		//About button handling
 		buttonAbout.setOnAction(e->{
-			String aboutMessage = "Application made in Java \n Icons from www.icons8.com \n SQLite used for database management \n JavaFX functionality thanks to tutorials by thenewboston on YouTube \n Bonus thanks to the wonderful people on StackOverflow";
+			String aboutMessage = "Application made in Java \n Icons from www.icons8.com \n SQLite used for database management \n JavaFX functionality thanks to tutorials by thenewboston on YouTube \n Bonus thanks to the wonderful people on StackOverflow \n\n Made by Adrian Klessa (@AdrianKlessa on GitHub)";
 			AboutBox.display("About", aboutMessage);
 			
 		});
@@ -343,6 +343,10 @@ public class Main extends Application{
 			}
 		});
 		
+		buttonSettings.setOnAction(e->{
+			SettingsBox.display("Settings", img_garbage,historyList);
+		});
+		
 		Image logo = new Image(getClass().getResourceAsStream("/coctail.png"));
 		window.getIcons().add(logo);
 		
@@ -444,7 +448,7 @@ public class Main extends Application{
 				e1.printStackTrace();
 			}
 		});
-		
+		//favourites button
 		buttFav.setOnAction(e->{
 			if(favouritesSet.contains(selectedId)) {
 				favouritesSet.remove(selectedId);
@@ -472,6 +476,11 @@ public class Main extends Application{
 		
 	}
 	
+	private void cleanHistory() {
+		historyList.clear();
+	}
+	
+	
 	private void search(String string, int [] checkboxes) throws Exception {
 		ResultSet rs;
 		DBConnection db = new DBConnection();
@@ -481,7 +490,7 @@ public class Main extends Application{
 		String lacking="";
 		int ingCounter=0;
 		int first=0;
-		
+		//Getting checkboxes that aren't checked
 		while(ingCounter<=checkboxCount) {
 			if(checkboxes[ingCounter+1]==0) {
 				if(first==0) {
@@ -495,7 +504,7 @@ public class Main extends Application{
 			
 			ingCounter++;
 		}
-		
+		//Setting up the queries
 		if(first==0) {
 			if(searchedText.isEmpty()) {
 				query1="SELECT * FROM DRINK;";
@@ -532,7 +541,6 @@ public class Main extends Application{
 			
 			
 			for (int i = historyList.size(); i-- > 0; ) {
-			    System.out.println(historyList.get(i));
 				if(first==0) {
 					histString=Integer.toString(historyList.get(i));
 					first=1;
@@ -542,118 +550,200 @@ public class Main extends Application{
 			    
 			}
 			
-			
-			
-			for(Integer current: historyList) {
-				if(first==0) {
-					histString=Integer.toString(current);
-					first=1;
-				}else {
-					histString+=", "+Integer.toString(current);
-				}
-				
-				
-			}
 			query1="SELECT * FROM DRINK WHERE ID IN ("+histString+");";
 		}
 		
-
-		
-		
-		rs=db.selectQuery(query1);
-		int id;
-		String name, desc;
-		String image;
-		int counter=1;
-		
-		Label label1,label2,label3;
-		
-		while(rs.next()) {
-			id=rs.getInt("ID");
-			name=rs.getString("name");
-			desc=rs.getString("desc");
-			if(rs.getString("image2")!=null){
-				image=rs.getString("image2");
+		//History branch of search
+		if(viewingHistory==1) {
+			int counter=1;
+			Label label1,label2,label3;
+			int id;
+			String name, desc;
+			String image;
+			for (int i = historyList.size(); i-- > 0; ) {
+				query1="SELECT * FROM DRINK WHERE ID="+historyList.get(i)+";";
+				rs=db.selectQuery(query1);
+				id=rs.getInt("ID");
+				name=rs.getString("name");
+				desc=rs.getString("desc");
+				if(rs.getString("image2")!=null){
+					image=rs.getString("image2");
+					
+					byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(image);
+					BufferedImage newimg = ImageIO.read(new ByteArrayInputStream(imageBytes));
+					Image almostThere = SwingFXUtils.toFXImage(newimg, null);
+					MyImageView viewableImage = new MyImageView(almostThere,id);
+					GridPane.setConstraints(viewableImage,3,counter);
+					viewableImage.setFitHeight(150);
+					viewableImage.setFitWidth(150);
+					viewableImage.setOnMouseClicked(e->
+					{
+						Object source = e.getSource();
+						selectedId=((MyImageView)source).get_drink_id();
+						try {
+							showDrink(selectedId);
+							historyList.add(selectedId);
+						} catch (Exception e1) {
+							e1.printStackTrace();
+						}
+					});
+					grid.getChildren().add(viewableImage);
+				}
+				label1 = new MyLabel(Integer.toString(id),id);
+				label2 = new MyLabel(name,id);
+				label3 = new MyLabel(desc,id);		
 				
-				byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(image);
-				BufferedImage newimg = ImageIO.read(new ByteArrayInputStream(imageBytes));
-				Image almostThere = SwingFXUtils.toFXImage(newimg, null);
-				MyImageView viewableImage = new MyImageView(almostThere,id);
-				GridPane.setConstraints(viewableImage,3,counter);
-				viewableImage.setFitHeight(150);
-				viewableImage.setFitWidth(150);
-				viewableImage.setOnMouseClicked(e->
+	
+				
+				label1.setOnMouseClicked(e ->
 				{
+					
 					Object source = e.getSource();
-					selectedId=((MyImageView)source).get_drink_id();
+					selectedId=((MyLabel)source).get_drink_id();
 					try {
 						showDrink(selectedId);
 						historyList.add(selectedId);
 					} catch (Exception e1) {
 						e1.printStackTrace();
 					}
-				});
-				grid.getChildren().add(viewableImage);
-			}
-			label1 = new MyLabel(Integer.toString(id),id);
-			label2 = new MyLabel(name,id);
-			label3 = new MyLabel(desc,id);		
-			
-
-			
-			label1.setOnMouseClicked(e ->
-			{
+				}
+						
+				);
+				label2.setOnMouseClicked(e ->
+				{
+					Object source = e.getSource();
+					selectedId=((MyLabel)source).get_drink_id();
+					try {
+						showDrink(selectedId);
+						historyList.add(selectedId);
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+				}
+						
+				);
+				label3.setOnMouseClicked(e ->
+				{
+					Object source = e.getSource();
+					selectedId=((MyLabel)source).get_drink_id();
+					try {
+						showDrink(selectedId);
+						historyList.add(selectedId);
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+				}
+						
+				);
 				
-				Object source = e.getSource();
-				selectedId=((MyLabel)source).get_drink_id();
-				try {
-					showDrink(selectedId);
-					historyList.add(selectedId);
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
+				label1.setWrapText(true);
+				label2.setWrapText(true);
+				label3.setWrapText(true);
+				label2.setMinWidth(200);
+				label3.setMinWidth(350);
+				GridPane.setConstraints(label1,0,counter);
+				GridPane.setConstraints(label2,1,counter);
+				GridPane.setConstraints(label3,2,counter);
+				counter++;
+				grid.getChildren().addAll(label1,label2,label3);
 			}
-					
-			);
-			label2.setOnMouseClicked(e ->
-			{
-				Object source = e.getSource();
-				selectedId=((MyLabel)source).get_drink_id();
-				try {
-					showDrink(selectedId);
-					historyList.add(selectedId);
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
-			}
-					
-			);
-			label3.setOnMouseClicked(e ->
-			{
-				Object source = e.getSource();
-				selectedId=((MyLabel)source).get_drink_id();
-				try {
-					showDrink(selectedId);
-					historyList.add(selectedId);
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
-			}
-					
-			);
+		}else {
 			
-			label1.setWrapText(true);
-			label2.setWrapText(true);
-			label3.setWrapText(true);
-			label2.setMinWidth(200);
-			label3.setMinWidth(350);
-			GridPane.setConstraints(label1,0,counter);
-			GridPane.setConstraints(label2,1,counter);
-			GridPane.setConstraints(label3,2,counter);
-			counter++;
-			grid.getChildren().addAll(label1,label2,label3);
+			//Normal search (non-history)
+			rs=db.selectQuery(query1);
+			int id;
+			String name, desc;
+			String image;
+			int counter=1;
+			
+			Label label1,label2,label3;
+			
+			while(rs.next()) {
+				id=rs.getInt("ID");
+				name=rs.getString("name");
+				desc=rs.getString("desc");
+				if(rs.getString("image2")!=null){
+					image=rs.getString("image2");
+					
+					byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(image);
+					BufferedImage newimg = ImageIO.read(new ByteArrayInputStream(imageBytes));
+					Image almostThere = SwingFXUtils.toFXImage(newimg, null);
+					MyImageView viewableImage = new MyImageView(almostThere,id);
+					GridPane.setConstraints(viewableImage,3,counter);
+					viewableImage.setFitHeight(150);
+					viewableImage.setFitWidth(150);
+					viewableImage.setOnMouseClicked(e->
+					{
+						Object source = e.getSource();
+						selectedId=((MyImageView)source).get_drink_id();
+						try {
+							showDrink(selectedId);
+							historyList.add(selectedId);
+						} catch (Exception e1) {
+							e1.printStackTrace();
+						}
+					});
+					grid.getChildren().add(viewableImage);
+				}
+				label1 = new MyLabel(Integer.toString(id),id);
+				label2 = new MyLabel(name,id);
+				label3 = new MyLabel(desc,id);		
+				
+	
+				
+				label1.setOnMouseClicked(e ->
+				{
+					
+					Object source = e.getSource();
+					selectedId=((MyLabel)source).get_drink_id();
+					try {
+						showDrink(selectedId);
+						historyList.add(selectedId);
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+				}
+						
+				);
+				label2.setOnMouseClicked(e ->
+				{
+					Object source = e.getSource();
+					selectedId=((MyLabel)source).get_drink_id();
+					try {
+						showDrink(selectedId);
+						historyList.add(selectedId);
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+				}
+						
+				);
+				label3.setOnMouseClicked(e ->
+				{
+					Object source = e.getSource();
+					selectedId=((MyLabel)source).get_drink_id();
+					try {
+						showDrink(selectedId);
+						historyList.add(selectedId);
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+				}
+						
+				);
+				
+				label1.setWrapText(true);
+				label2.setWrapText(true);
+				label3.setWrapText(true);
+				label2.setMinWidth(200);
+				label3.setMinWidth(350);
+				GridPane.setConstraints(label1,0,counter);
+				GridPane.setConstraints(label2,1,counter);
+				GridPane.setConstraints(label3,2,counter);
+				counter++;
+				grid.getChildren().addAll(label1,label2,label3);
+			}
 		}
-		
 		db.closeDB();	
 	}
 
